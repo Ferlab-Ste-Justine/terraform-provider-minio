@@ -1,29 +1,6 @@
-<p align="center">
-  <a href="https://github.com/aminueza/terraform-provider-minio">
-    <img src="https://i.imgur.com/yijdDec.png" alt="minio-provider-terraform" width="200">
-  </a>
-  <h3 align="center" style="font-weight: bold">Terraform Provider for MinIO</h3>
-  <p align="center">
-    <a href="https://github.com/aminueza/terraform-provider-minio/graphs/contributors">
-      <img alt="Contributors" src="https://img.shields.io/github/contributors/aminueza/terraform-provider-minio">
-    </a>
-    <a href="https://golang.org/doc/devel/release.html">
-      <img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/aminueza/terraform-provider-minio">
-    </a>
-    <a href="https://gitpod.io/#https://github.com/aminueza/terraform-provider-minio">
-      <img alt="Gitpod Ready-to-Code" src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod">
-    </a>
-    <a href="https://github.com/aminueza/terraform-provider-minio/actions?query=workflow%3A%22Terraform+Provider+CI%22">
-      <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/aminueza/terraform-provider-minio/Terraform%20Provider%20CI">
-    </a>
-    <a href="https://github.com/aminueza/terraform-provider-minio/releases">
-      <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/aminueza/terraform-provider-minio?include_prereleases">
-    </a>
-  </p>
-  <p align="center">
-    <a href="https://github.com/aminueza/terraform-provider-minio/tree/master/docs"><strong>Explore the docs »</strong></a>
-  </p>
-</p>
+## Disclaimer
+
+We are liable to break backward compatibility between versions. For a more stable experience between versions, please use upstream repo.
 
 ## Table of Contents
 
