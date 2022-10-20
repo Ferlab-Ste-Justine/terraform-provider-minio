@@ -43,7 +43,7 @@ func resourceMinioIAMUser() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Delete user even if it has non-Terraform-managed IAM access keys",
+				Description: "When deleting user, proceed even if it has non-Terraform-managed IAM access keys",
 			},
 			"disable_user": {
 				Type:        schema.TypeBool,
@@ -113,11 +113,6 @@ func minioUpdateUser(ctx context.Context, d *schema.ResourceData, meta interface
 
 	if iamUserConfig.MinioDisableUser {
 		userStatus.Status = madmin.AccountDisabled
-	}
-
-	//To analyze later and probably remove
-	if iamUserConfig.MinioForceDestroy {
-		return minioDeleteUser(ctx, d, meta)
 	}
 
 	userServerInfo, _ := iamUserConfig.MinioAdmin.GetUserInfo(ctx, iamUserConfig.MinioIAMName)
