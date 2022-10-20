@@ -128,13 +128,11 @@ func minioUpdateUser(ctx context.Context, d *schema.ResourceData, meta interface
 		}
 	}
 
-	if d.HasChangeExcept(iamUserConfig.MinioSecret){
+	if d.HasChange("secret"){
 		err := iamUserConfig.MinioAdmin.SetUser(ctx, userStatus.AccessKey, userStatus.SecretKey, userStatus.Status)
 		if err != nil {
 			return NewResourceError("error updating IAM User Key %s: %s", d.Id(), err)
 		}
-
-		_ = d.Set("secret", secretKey)
 	}
 
 	return minioReadUser(ctx, d, meta)
