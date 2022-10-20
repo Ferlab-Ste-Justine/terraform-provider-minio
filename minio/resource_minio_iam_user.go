@@ -62,6 +62,20 @@ func resourceMinioIAMUser() *schema.Resource {
 	}
 }
 
+// IAMUserConfig creates new user config
+func IAMUserConfig(d *schema.ResourceData, meta interface{}) *S3MinioIAMUserConfig {
+	m := meta.(*S3MinioClient)
+
+	return &S3MinioIAMUserConfig{
+		MinioAdmin:        m.S3Admin,
+		MinioIAMName:      d.Get("name").(string),
+		MinioSecret:       d.Get("secret").(string),
+		MinioDisableUser:  d.Get("disable_user").(bool),
+		MinioUpdateKey:    d.Get("update_secret").(bool),
+		MinioForceDestroy: d.Get("force_destroy").(bool),
+	}
+}
+
 func minioCreateUser(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	iamUserConfig := IAMUserConfig(d, meta)
