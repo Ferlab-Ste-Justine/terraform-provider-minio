@@ -10,6 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/minio/madmin-go"
 )
 
@@ -27,7 +28,16 @@ func resourceMinioIAMUser() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
+				ForceNew:     true,
+				Description:  "Access Key of the user",
 				ValidateFunc: validateMinioIamUserName,
+			},
+			"secret": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Secret Key of the user",
+				Sensitive:   true,
+				ValidateFunc: validation.StringIsNotEmpty,
 			},
 			"force_destroy": {
 				Type:        schema.TypeBool,
@@ -41,21 +51,9 @@ func resourceMinioIAMUser() *schema.Resource {
 				Default:     false,
 				Description: "Disable user",
 			},
-			"update_secret": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     false,
-				Description: "Rotate Minio User Secret Key",
-			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
-			},
-			"secret": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Optional:  true,
-				Sensitive: true,
 			},
 			"tags": tagsSchema(),
 		},
@@ -71,7 +69,6 @@ func IAMUserConfig(d *schema.ResourceData, meta interface{}) *S3MinioIAMUserConf
 		MinioIAMName:      d.Get("name").(string),
 		MinioSecret:       d.Get("secret").(string),
 		MinioDisableUser:  d.Get("disable_user").(bool),
-		MinioUpdateKey:    d.Get("update_secret").(bool),
 		MinioForceDestroy: d.Get("force_destroy").(bool),
 	}
 }
@@ -84,19 +81,12 @@ func minioCreateUser(ctx context.Context, d *schema.ResourceData, meta interface
 	accessKey := iamUserConfig.MinioIAMName
 	secretKey := iamUserConfig.MinioSecret
 
-	if secretKey == "" {
-		if secretKey, err = generateSecretAccessKey(); err != nil {
-			return NewResourceError("error creating user", accessKey, err)
-		}
-	}
-
 	err = iamUserConfig.MinioAdmin.AddUser(ctx, accessKey, secretKey)
 	if err != nil {
 		return NewResourceError("error creating user", accessKey, err)
 	}
 
 	d.SetId(aws.StringValue(&accessKey))
-	_ = d.Set("secret", secretKey)
 
 	if iamUserConfig.MinioDisableUser {
 		err = iamUserConfig.MinioAdmin.SetUserStatus(ctx, accessKey, madmin.AccountDisabled)
@@ -113,50 +103,19 @@ func minioUpdateUser(ctx context.Context, d *schema.ResourceData, meta interface
 	iamUserConfig := IAMUserConfig(d, meta)
 	userStatus := UserStatus{}
 
-	var err error
 	secretKey := iamUserConfig.MinioSecret
 
-	if secretKey == "" || iamUserConfig.MinioUpdateKey {
-		if secretKey, err = generateSecretAccessKey(); err != nil {
-			return NewResourceError("error creating user", d.Id(), err)
-		}
-	}
-
-	if d.HasChange(iamUserConfig.MinioIAMName) {
-		on, nn := d.GetChange(iamUserConfig.MinioIAMName)
-
-		log.Println("[DEBUG] Update IAM User:", iamUserConfig.MinioIAMName)
-		err := iamUserConfig.MinioAdmin.RemoveUser(ctx, on.(string))
-		if err != nil {
-			return NewResourceError("error updating IAM User %s: %s", d.Id(), err)
-		}
-
-		err = iamUserConfig.MinioAdmin.AddUser(ctx, nn.(string), secretKey)
-		if err != nil {
-			return NewResourceError("error updating IAM User %s: %s", d.Id(), err)
-		}
-
-		d.SetId(nn.(string))
-	}
-
-	if d.HasChangeExcept(iamUserConfig.MinioSecret ) {
-		userStatus = UserStatus{
-			AccessKey: iamUserConfig.MinioIAMName,
-			SecretKey: iamUserConfig.MinioSecret,
-			Status:    madmin.AccountEnabled,
-		}
-	}else{
-		userStatus = UserStatus{
-			AccessKey: iamUserConfig.MinioIAMName,
-			SecretKey: secretKey,
-			Status:    madmin.AccountEnabled,
-		}	
-	}
+	userStatus = UserStatus{
+		AccessKey: iamUserConfig.MinioIAMName,
+		SecretKey: secretKey,
+		Status:    madmin.AccountEnabled,
+	}	
 
 	if iamUserConfig.MinioDisableUser {
 		userStatus.Status = madmin.AccountDisabled
 	}
 
+	//To analyze later and probably remove
 	if iamUserConfig.MinioForceDestroy {
 		return minioDeleteUser(ctx, d, meta)
 	}
@@ -169,7 +128,7 @@ func minioUpdateUser(ctx context.Context, d *schema.ResourceData, meta interface
 		}
 	}
 
-	if iamUserConfig.MinioUpdateKey || d.HasChangeExcept(iamUserConfig.MinioSecret){
+	if d.HasChangeExcept(iamUserConfig.MinioSecret){
 		err := iamUserConfig.MinioAdmin.SetUser(ctx, userStatus.AccessKey, userStatus.SecretKey, userStatus.Status)
 		if err != nil {
 			return NewResourceError("error updating IAM User Key %s: %s", d.Id(), err)
