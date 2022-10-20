@@ -40,18 +40,18 @@ output "minio_secret_key" {
 
 ### Required
 
-- `target_user` (String)
+- **target_user** (String)
 
 ### Optional
 
-- `disable_user` (Boolean) Disable service account
-- `update_secret` (Boolean) rotate secret key
+- **disable_user** (Boolean) Disable service account
+- **id** (String) The ID of this resource.
+- **update_secret** (Boolean) rotate secret key
 
 ### Read-Only
 
-- `access_key` (String)
-- `id` (String) The ID of this resource.
-- `secret_key` (String, Sensitive)
-- `status` (String)
+- **access_key** (String)
+- **secret_key** (String, Sensitive)
+- **status** (String)
 
 

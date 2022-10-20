@@ -39,16 +39,15 @@ output "secret" {
 
 ### Required
 
-- **name** (String)
+- **name** (String) Access Key of the user
+- **secret** (String, Sensitive) Secret Key of the user
 
 ### Optional
 
 - **disable_user** (Boolean) Disable user
-- **force_destroy** (Boolean) Delete user even if it has non-Terraform-managed IAM access keys
+- **force_destroy** (Boolean) When deleting user, proceed even if it has non-Terraform-managed IAM access keys
 - **id** (String) The ID of this resource.
-- **secret** (String, Sensitive)
 - **tags** (Map of String)
-- **update_secret** (Boolean) Rotate Minio User Secret Key
 
 ### Read-Only
 

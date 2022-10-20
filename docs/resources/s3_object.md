@@ -27,7 +27,7 @@ resource "minio_s3_object" "txt_file" {
 }
 
 output "minio_id" {
-  value = "${minio_s3_object.txt_file.id}"
+  value = minio_s3_object.txt_file.id
 }
 ```
 
