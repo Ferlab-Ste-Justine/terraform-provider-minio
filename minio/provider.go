@@ -29,25 +29,19 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Minio Access Key",
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_ACCESS_KEY",
-				}, nil),
+				DefaultFunc: schema.EnvDefaultFunc("MINIO_ACCESS_KEY", nil),
 			},
 			"minio_secret_key": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Minio Secret Key",
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_SECRET_KEY",
-				}, nil),
+				DefaultFunc: schema.EnvDefaultFunc("MINIO_SECRET_KEY", nil),
 			},
 			"minio_session_token": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Minio Session Token",
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_SESSION_TOKEN",
-				}, ""),
+				DefaultFunc: schema.EnvDefaultFunc("MINIO_SESSION_TOKEN", ""),
 			},
 			"minio_api_version": {
 				Type:        schema.TypeString,
@@ -58,39 +52,29 @@ func Provider() *schema.Provider {
 			"minio_ssl": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Description: "Minio SSL enabled (default: false)",
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_ENABLE_HTTPS",
-				}, nil),
+				Default:     true,
+				Description: "Minio SSL enabled (default: true)",
 			},
 			"minio_insecure": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Default:     true,
 				Description: "Disable SSL certificate verification (default: false)",
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_INSECURE",
-				}, nil),
 			},
 			"minio_cacert_file": {
 				Type:     schema.TypeString,
 				Optional: true,
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_CACERT_FILE",
-				}, nil),
+				DefaultFunc: schema.EnvDefaultFunc("MINIO_CACERT_FILE", nil),
 			},
 			"minio_cert_file": {
 				Type:     schema.TypeString,
 				Optional: true,
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_CERT_FILE",
-				}, nil),
+				DefaultFunc: schema.EnvDefaultFunc("MINIO_CERT_FILE", nil),
 			},
 			"minio_key_file": {
 				Type:     schema.TypeString,
 				Optional: true,
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"MINIO_KEY_FILE",
-				}, nil),
+				DefaultFunc: schema.EnvDefaultFunc("MINIO_KEY_FILE", nil),
 			},
 		},
 
